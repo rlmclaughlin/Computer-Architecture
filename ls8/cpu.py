@@ -1,5 +1,3 @@
-"""CPU functionality."""
-
 import sys
 
 class CPU:
@@ -7,14 +5,22 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        pass
+        self.reg = [0] * 0x08
+        self.ram = [0] * 0xff
+        self.pc = 0x00 
+        self.ir = 0x00
+        self.h = 0b00000001 
+        
+    def ram_read(self, current):
+        return self.ram[current]
+
+    def ram_write(self, write, current):
+        self.ram[current] = write
 
     def load(self):
         """Load a program into memory."""
 
         address = 0
-
-        # For now, we've just hardcoded a program:
 
         program = [
             # From print8.ls8
@@ -36,7 +42,6 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -48,10 +53,8 @@ class CPU:
 
         print(f"TRACE: %02X | %02X %02X %02X |" % (
             self.pc,
-            #self.fl,
-            #self.ie,
             self.ram_read(self.pc),
-            self.ram_read(self.pc + 1),
+            self.ram_read(self.pc + 3),
             self.ram_read(self.pc + 2)
         ), end='')
 
@@ -62,4 +65,22 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        LDI = 0b10000010
+        PRN = 0b01000111
+        
+        run_cpu = True
+
+        while run_cpu:
+
+            self.ir = self.pc
+            o1 = self.ram_read(self.pc + 1)
+            o2 = self.ram_read(self.pc + 2)
+
+            if self.ram[self.ir] == self.h:
+                run_cpu = False
+            elif self.ram[self.ir] == LDI:
+                self.reg[o1] = o2
+                self.pc += 3
+            elif self.ram[self.ir] == PRN:
+                print(self.reg[o1])
+                self.pc += 2
