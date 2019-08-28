@@ -112,7 +112,7 @@ class CPU:
             ins_set = ((ir >> 4) & ob1) == 1
 
             0b00000001 >> 4
-        &   0b00000001
+            0b00000001
             0b00000001
 
            #if ir == LDI:
@@ -123,11 +123,11 @@ class CPU:
            #    self.hlt = True
            #
 
-           if ir in self.ops:
-               self.ops[ir](op_a, op_b)
+            if ir in self.ops:
+                self.ops[ir](op_a, op_b)
 
-           if not ins_set:
-               self.pc += op_size + 1
+            if not ins_set:
+                self.pc += op_size + 1
 
                
         
